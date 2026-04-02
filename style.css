@@ -1,0 +1,30 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #0a0812;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: monospace;
+}
+
+#game-container {
+  position: relative;
+  line-height: 0;
+}
+
+#game-container canvas {
+  display: block;
+  border: 1px solid #750f0f;
+  box-shadow:
+    0 0 60px rgba(190, 25, 25, 0.25),
+    0 0 120px rgba(104, 15, 15, 0.1);
+  image-rendering: pixelated;
+}
