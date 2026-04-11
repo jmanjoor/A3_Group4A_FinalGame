@@ -41,6 +41,7 @@ class Player {
     // Animation
     this.animTimer = 0;
     this.animFrame = 0;
+    this.keysActive = false;
   }
 
   // ── Convenience getters derived from pstate ───────────────────────────
@@ -62,6 +63,7 @@ class Player {
     if (!isFinite(this.vx)) this.vx = 0;
     if (!isFinite(this.vy)) this.vy = 0;
 
+    this.keysActive = keys.left || keys.right || keys.down || keys.space;
     this._handleInput(keys);
     this._applyGravity();
     this._move(platforms);
@@ -235,16 +237,10 @@ class Player {
   _drawBat(p) {
     const t = Date.now() * 0.001;
 
-    // Platform top = right-side up. All other states = upside-down.
-    if (this.pstate !== PSTATE.PLATFORM_TOP) {
+    // GIF is naturally oriented for hanging; flip when on platform top
+    if (this.pstate === PSTATE.PLATFORM_TOP) {
       p.scale(1, -1);
     }
-
-    const wingFlap = this.pstate === PSTATE.DIVING
-      ? Math.sin(t * 12)
-      : (this.pstate === PSTATE.HANGING || this.pstate === PSTATE.PLATFORM_TOP)
-        ? 0
-        : Math.sin(t * 3) * 0.3;
 
     // Recharge glow
     if ((this.pstate === PSTATE.HANGING || this.pstate === PSTATE.PLATFORM_TOP)
@@ -254,50 +250,15 @@ class Player {
       p.ellipse(0, 0, 40, 20);
     }
 
-    // Wings
-    p.noStroke();
-    p.fill(this._bodyColor());
-    const lWingY = -4 + wingFlap * 6;
-    p.beginShape();
-    p.vertex(0, -2); p.vertex(-8, lWingY); p.vertex(-16, lWingY - 2);
-    p.vertex(-12, lWingY + 6); p.vertex(-4, lWingY + 8); p.vertex(0, 2);
-    p.endShape(p.CLOSE);
+    // Animation only when vertical velocity is non-zero
+    const img = this.vy !== 0 ? SPRITES.bat.animation : SPRITES.bat.idle;
 
-    const rWingY = -4 - wingFlap * 6;
-    p.beginShape();
-    p.vertex(0, -2); p.vertex(8, rWingY); p.vertex(16, rWingY - 2);
-    p.vertex(12, rWingY + 6); p.vertex(4, rWingY + 8); p.vertex(0, 2);
-    p.endShape(p.CLOSE);
-
-    // Body
-    p.fill(this._bodyColor());
-    p.ellipse(0, 2, 14, 12);
-    p.fill('rgba(180,80,60,0.4)');
-    p.ellipse(0, 4, 8, 7);
-
-    // Head
-    p.fill(this._bodyColor());
-    p.circle(0, -5, 12);
-
-    // Ears
-    p.fill(this._bodyColor());
-    p.triangle(-3, -8, -6, -14, -1, -10);
-    p.triangle( 3, -8,  6, -14,  1, -10);
-    p.fill('rgba(210,100,80,0.6)');
-    p.triangle(-3, -8, -5, -13, -2, -10);
-    p.triangle( 3, -8,  5, -13,  2, -10);
-
-    // Eyes
-    p.fill('#ffffff');
-    p.circle(-3, -5, 4); p.circle(3, -5, 4);
-    p.fill('#120504');
-    p.circle(-2.5, -5, 2.5); p.circle(3.5, -5, 2.5);
-    p.fill('rgba(255,255,255,0.8)');
-    p.circle(-2, -6, 1); p.circle(4, -6, 1);
-
-    // Nose
-    p.fill('rgba(200,80,60,0.8)');
-    p.ellipse(0, -2, 4, 2);
+    // Draw GIF centered on the player
+    const sw = 72;
+    const sh = 64;
+    if (this.invincibleTimer > 0) p.tint(255, 140, 100, 230);
+    p.image(img, -sw / 2, -sh / 2, sw, sh);
+    p.noTint();
 
     // Low stamina warning
     if (this.stamina < C.STAMINA_LOW) {
@@ -307,12 +268,6 @@ class Player {
       p.strokeWeight(1.5);
       p.ellipse(0, 0, 30, 22);
     }
-  }
-
-  _bodyColor() {
-    if (this.invincibleTimer > 0) return 'rgba(255,140,100,0.9)';
-    if (this.stamina < C.STAMINA_LOW) return '#4a1208';
-    return '#2a0a06';
   }
 
   _drawDeath(p) {

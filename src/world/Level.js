@@ -22,6 +22,8 @@ class Level {
     const T = C.TILE;
     const rawSolid  = [];
     const rawSprite = [];
+    const rawSpikesUp   = [];
+    const rawSpikesDown = [];
 
     for (let row = 0; row < map.length; row++) {
       for (let col = 0; col < map[row].length; col++) {
@@ -34,9 +36,9 @@ class Level {
         } else if (tile === 7) {
           rawSprite.push({ col, row, x, y });
         } else if (tile === 2) {
-          this.spikes.push(new Spike(x, y, 'up'));
+          rawSpikesUp.push({ col, row, x, y });
         } else if (tile === 3) {
-          this.spikes.push(new Spike(x, y, 'down'));
+          rawSpikesDown.push({ col, row, x, y });
         } else if (tile === 4) {
           this.fruits.push(new Fruit(x + T / 2, y + T / 2, 'echo'));    // purple — default
         } else if (tile === 41) {
@@ -57,6 +59,45 @@ class Level {
 
     for (const pl of rawSolid)  this.platforms.push(new Platform(pl.x, pl.y, T, T, false));
     for (const pl of rawSprite) this.platforms.push(new Platform(pl.x, pl.y, T, T, true));
+
+    // Merge adjacent spikes and determine platform attachment
+    this._buildSpikes(rawSpikesUp,   'up',   map);
+    this._buildSpikes(rawSpikesDown, 'down', map);
+  }
+
+  // Merge horizontally adjacent spikes into multi-tile strips.
+  // Check whether the strip is attached to a platform/solid tile
+  // (row below for up-spikes, row above for down-spikes).
+  _buildSpikes(rawSpikes, direction, map) {
+    const T = C.TILE;
+    rawSpikes.sort((a, b) => a.row - b.row || a.col - b.col);
+
+    const groups = [];
+    let cur = null;
+
+    for (const s of rawSpikes) {
+      if (cur && cur.row === s.row && cur.col + cur.count === s.col) {
+        cur.count++;
+      } else {
+        if (cur) groups.push(cur);
+        cur = { col: s.col, row: s.row, x: s.x, y: s.y, count: 1 };
+      }
+    }
+    if (cur) groups.push(cur);
+
+    for (const g of groups) {
+      // Check the adjacent row for solid (1) or sprite-platform (7) tiles
+      const checkRow = direction === 'up' ? g.row + 1 : g.row - 1;
+      let attached = false;
+      if (checkRow >= 0 && checkRow < map.length) {
+        attached = true;
+        for (let c = g.col; c < g.col + g.count; c++) {
+          const t = map[checkRow][c];
+          if (t !== 1 && t !== 7) { attached = false; break; }
+        }
+      }
+      this.spikes.push(new Spike(g.x, g.y, direction, g.count * T, attached));
+    }
   }
 
   _mergeHorizontalPlatforms() {
@@ -112,8 +153,15 @@ class Level {
 
   draw(p) {
     p.background(C.BG);
-    for (const plat  of this.platforms) plat.draw(p);
+    if (SPRITES.background) {
+      p.push();
+      p.tint(30, 25, 20);
+      p.image(SPRITES.background, 0, 0, this.worldW, this.worldH);
+      p.noTint();
+      p.pop();
+    }
     for (const spike of this.spikes)    spike.draw(p);
+    for (const plat  of this.platforms) plat.draw(p, this.worldW, this.worldH);
     for (const fruit of this.fruits)    if (!fruit.collected) fruit.draw(p);
     if (this.exit) this._drawExit(p);
   }
