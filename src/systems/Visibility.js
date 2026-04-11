@@ -30,7 +30,7 @@ class Visibility {
       ctx.clearRect(0, 0, viewW, viewH);
 
       // Fill with dark fog
-      ctx.fillStyle = 'rgba(15,7,5,0.97)';
+      ctx.fillStyle = 'rgba(15,7,5,1)';
       ctx.fillRect(0, 0, viewW, viewH);
 
       // Cut out vision circle around the player

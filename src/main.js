@@ -66,6 +66,7 @@ const sketch = (p) => {
       echoSystem.pulseY = player.cy;
       if (echoSystem.trigger(player.cx, player.cy)) {
         echoFiredThisFrame = true;
+        hud.notifyEchoUsed();
         audioManager.playSonar();
       }
     }
