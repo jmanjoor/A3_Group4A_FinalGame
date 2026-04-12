@@ -107,7 +107,7 @@ class AudioManager {
     // Type: Free sound effect (direct download)
     // License: Royalty-free
     // Access: https://pixabay.com
-    // Date Accessed: March 24
+    // Date Accessed: March 20
     this._fetch("assets/audio/gameBgm.mp3", "bgm");
 
     // Sound: "wings" — bat wing flap loop (airborne ambient)
@@ -115,7 +115,7 @@ class AudioManager {
     // Type: Free sound effect (direct download)
     // License: Royalty-free
     // Access: https://mixkit.co
-    // Date Accessed: March 24
+    // Date Accessed: March 20
     this._fetch("assets/audio/wings", "wings");
 
     // Sound: "pavement _walk.wav" — footstep / pavement walk loop
@@ -123,7 +123,7 @@ class AudioManager {
     // Type: Free sound effect (direct download)
     // License: Royalty-free
     // Access: https://mixkit.co
-    // Date Accessed: March 24
+    // Date Accessed: March 20
     this._fetch("assets/audio/pavement%20_walk.wav", "walk");
 
     // Sound: "AppleCrunch.wav" — apple collect sound effect
@@ -131,7 +131,7 @@ class AudioManager {
     // Type: Free sound effect (direct download)
     // License: Royalty-free
     // Access: https://mixkit.co
-    // Date Accessed: March 24
+    // Date Accessed: March 20
     this._fetch("assets/audio/AppleCrunch.wav", "crunch");
 
     // Sound: "damageHurt.wav" — damage / hurt sound effect
@@ -139,7 +139,7 @@ class AudioManager {
     // Type: Free sound effect (direct download)
     // License: Royalty-free
     // Access: https://mixkit.co
-    // Date Accessed: March 24
+    // Date Accessed: March 20
     this._fetch("assets/audio/damageHurt.wav", "hurt");
 
     // Sound: "sonar.mp3" — echolocation ping (E key)
@@ -147,7 +147,7 @@ class AudioManager {
     // Type: Free sound effect (direct download)
     // License: Royalty-free
     // Access: https://pixabay.com
-    // Date Accessed: March 24
+    // Date Accessed: March 20
     this._fetch("assets/audio/sonar.mp3", "sonar");
 
     // Sound: "whooshInstructions.mp3" — tutorial page transition whoosh
@@ -155,7 +155,7 @@ class AudioManager {
     // Type: Free sound effect (direct download)
     // License: Royalty-free
     // Access: https://mixkit.co
-    // Date Accessed: March 24
+    // Date Accessed: March 20
     this._fetch("assets/audio/whooshInstructions.mp3", "whoosh");
   }
 
