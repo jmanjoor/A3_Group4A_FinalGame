@@ -2,9 +2,8 @@
 
 ## BLIND AS A BAT
 
-## Group Number
+## Group 4A
 
-Group 4A
 Michael Gvozdek - 21081421
 Charlie Cilla - 21068022
 Naomi Domingo - 21064915
@@ -15,7 +14,7 @@ Jowan Manjooran Jomon - 21105035
 
 ## Description
 
-Blind flight is a simple platformer style game where you play as a bat. Our groups disability is blindness, and to incorporate that we gave the bat limited vision. In order to be able to see where you are flying, you must use the echolocation feature which briefly reveals the rest of the map. Aside from the echolocation and vision mechanics, the game plays similarly to a regular platformer. The bat character has stamina which measures how long the player can "fly" for.
+Blind as a Bat is a simple platformer style game where you play as a bat. Our groups disability is blindness, and to incorporate that we gave the bat limited vision. In order to be able to see where you are flying, you must use the echolocation feature which briefly reveals the rest of the map. Aside from the echolocation and vision mechanics, the game plays similarly to a regular platformer. The bat character has stamina which measures how long the player can "fly" for.
 
 In order to complete the game, the pllayer must find all the fruits that are hidden throughout the level, which then reveals the door to the next level. The player must be cautious of their stamina, runnning out could cause them to fall to the floor and potentially hit spikes. The player has 3 hearts, and if they lose all of them by hitting spikes, they will lose the level. Upon losing all three lives, the player will have to restart the current level, but not the whole game.
 
