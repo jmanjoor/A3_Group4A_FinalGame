@@ -3,11 +3,11 @@
 // and its <script> tag + the audioManager calls in main.js to revert.
 
 // ── Volume levels (tune here) ─────────────────────────────────────────────
-const VOL_BGM = 0.11; // background music — well under SFX
+const VOL_BGM = 0.05; // background music — well under SFX
 const VOL_WINGS = 0.55; // airborne wing flaps
 const VOL_WALK = 0.38; // ground footsteps
 const VOL_CRUNCH = 0.72; // apple collect — punchy one-shot
-const VOL_HURT = 0.15; // damage hit — sharp and urgent
+const VOL_HURT = 0.05; // damage hit — sharp and urgent
 const VOL_SONAR = 0.6; // echolocation ping
 const VOL_WHOOSH = 0.5; // tutorial page transition
 
@@ -102,12 +102,60 @@ class AudioManager {
     this._bgmPending = false; // true if startBgm() was called before buffer decoded
     this._pending = {};
 
+    // Sound: "gameBgm.mp3" — level background music
+    // Source: Pixabay
+    // Type: Free sound effect (direct download)
+    // License: Royalty-free
+    // Access: https://pixabay.com
+    // Date Accessed: March 24
     this._fetch("assets/audio/gameBgm.mp3", "bgm");
+
+    // Sound: "wings" — bat wing flap loop (airborne ambient)
+    // Source: Mixkit
+    // Type: Free sound effect (direct download)
+    // License: Royalty-free
+    // Access: https://mixkit.co
+    // Date Accessed: March 24
     this._fetch("assets/audio/wings", "wings");
+
+    // Sound: "pavement _walk.wav" — footstep / pavement walk loop
+    // Source: Mixkit
+    // Type: Free sound effect (direct download)
+    // License: Royalty-free
+    // Access: https://mixkit.co
+    // Date Accessed: March 24
     this._fetch("assets/audio/pavement%20_walk.wav", "walk");
+
+    // Sound: "AppleCrunch.wav" — apple collect sound effect
+    // Source: Mixkit
+    // Type: Free sound effect (direct download)
+    // License: Royalty-free
+    // Access: https://mixkit.co
+    // Date Accessed: March 24
     this._fetch("assets/audio/AppleCrunch.wav", "crunch");
+
+    // Sound: "damageHurt.wav" — damage / hurt sound effect
+    // Source: Mixkit
+    // Type: Free sound effect (direct download)
+    // License: Royalty-free
+    // Access: https://mixkit.co
+    // Date Accessed: March 24
     this._fetch("assets/audio/damageHurt.wav", "hurt");
+
+    // Sound: "sonar.mp3" — echolocation ping (E key)
+    // Source: Pixabay
+    // Type: Free sound effect (direct download)
+    // License: Royalty-free
+    // Access: https://pixabay.com
+    // Date Accessed: March 24
     this._fetch("assets/audio/sonar.mp3", "sonar");
+
+    // Sound: "whooshInstructions.mp3" — tutorial page transition whoosh
+    // Source: Mixkit
+    // Type: Free sound effect (direct download)
+    // License: Royalty-free
+    // Access: https://mixkit.co
+    // Date Accessed: March 24
     this._fetch("assets/audio/whooshInstructions.mp3", "whoosh");
   }
 
@@ -270,7 +318,8 @@ class AudioManager {
     // decrements otherwise, so it stays > 0 across both halves of the
     // alternation, giving a stable "near ceiling" signal.
     const moving = Math.abs(player.vx) > 0.5;
-    const onSurface = player.isOnPlatformTop || player.isHanging || player.coyoteTimer > 0;
+    const onSurface =
+      player.isOnPlatformTop || player.isHanging || player.coyoteTimer > 0;
     const wantsWalk = !player.dead && onSurface && moving && !player.isDiving;
     if (wantsWalk && !this._walk._playing) {
       this._walk.fadeIn(WALK_FADE_IN);

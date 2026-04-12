@@ -1,8 +1,6 @@
 ## Project Title
 
-Blind Flight
-
----
+## BLIND AS A BAT
 
 ## Group Number
 
@@ -83,16 +81,16 @@ The tutorial will be redesigned as a playable sequence instead of a slideshow, a
 
 ## References
 
-Mixkit. (n.d.). *Bat wing flap loop* [Sound effect]. Mixkit. https://mixkit.co
+Mixkit. (n.d.). _Bat wing flap loop_ [Sound effect]. Mixkit. https://mixkit.co
 
-Mixkit. (n.d.). *Pavement walk footstep loop* [Sound effect]. Mixkit. https://mixkit.co
+Mixkit. (n.d.). _Pavement walk footstep loop_ [Sound effect]. Mixkit. https://mixkit.co
 
-Mixkit. (n.d.). *Apple crunch* [Sound effect]. Mixkit. https://mixkit.co
+Mixkit. (n.d.). _Apple crunch_ [Sound effect]. Mixkit. https://mixkit.co
 
-Mixkit. (n.d.). *Damage hurt hit* [Sound effect]. Mixkit. https://mixkit.co
+Mixkit. (n.d.). _Damage hurt hit_ [Sound effect]. Mixkit. https://mixkit.co
 
-Mixkit. (n.d.). *Whoosh transition* [Sound effect]. Mixkit. https://mixkit.co
+Mixkit. (n.d.). _Whoosh transition_ [Sound effect]. Mixkit. https://mixkit.co
 
-Pixabay. (n.d.). *Sonar ping* [Sound effect]. Pixabay. https://pixabay.com
+Pixabay. (n.d.). _Sonar ping_ [Sound effect]. Pixabay. https://pixabay.com
 
-Pixabay. (n.d.). *Game background music* [Music]. Pixabay. https://pixabay.com
+Pixabay. (n.d.). _Game background music_ [Music]. Pixabay. https://pixabay.com
