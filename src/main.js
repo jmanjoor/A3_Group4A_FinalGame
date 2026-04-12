@@ -40,12 +40,18 @@ const sketch = (p) => {
 
   p.draw = () => {
     echoFiredThisFrame = false;
+
+    // Normalise elapsed time to 1.0 at the 60 fps target.
+    // Clamped to 2.0 so a long stall (tab backgrounded, GC pause) never
+    // causes a physics explosion on the next frame.
+    const dt = Math.min(p.deltaTime / (1000 / 60), 2.0);
+
     switch (state) {
-      case STATE.WELCOME:   drawWelcome(p);  break;
-      case STATE.PLAYING:   drawPlaying(p);  break;
-      case STATE.DEAD:      drawDead(p);     break;
-      case STATE.LEVEL_WIN: drawLevelWin(p); break;
-      case STATE.GAME_WIN:  drawGameWin(p);  break;
+      case STATE.WELCOME:   drawWelcome(p);      break;
+      case STATE.PLAYING:   drawPlaying(p, dt);  break;
+      case STATE.DEAD:      drawDead(p);         break;
+      case STATE.LEVEL_WIN: drawLevelWin(p);     break;
+      case STATE.GAME_WIN:  drawGameWin(p);      break;
     }
   };
 
@@ -140,7 +146,7 @@ function drawWelcome(p) {
   welcomeScreen.draw(p);
 }
 
-function drawPlaying(p) {
+function drawPlaying(p, dt) {
   // Update tutorial triggers if in tutorial
   if (tutorialLevel) {
     tutorialLevel.update(player, keys, echoFiredThisFrame);
@@ -148,7 +154,8 @@ function drawPlaying(p) {
     if (level.fruitsCollected > 0) tutorialLevel.markFruitCollected();
   }
 
-  player.update(keys, level.platforms);
+  // Pass dt so physics accumulation is frame-rate independent
+  player.update(keys, level.platforms, dt);
   audioManager.update(player);
 
   // Fruit collection
@@ -190,7 +197,7 @@ function drawPlaying(p) {
     }
   }
 
-  camera.update(player, level.worldW, level.worldH, C.WIDTH, C.HEIGHT);
+  camera.update(player, level.worldW, level.worldH, C.WIDTH, C.HEIGHT, dt);
   echoSystem.update();
   echoSystem.applyToLevel(level);
   hud.update(level);

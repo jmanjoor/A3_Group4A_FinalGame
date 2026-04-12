@@ -50,7 +50,9 @@ class Player {
   get isAirborne()      { return this.pstate === PSTATE.AIRBORNE;      }
 
   // ── Update ────────────────────────────────────────────────────────────
-  update(keys, platforms) {
+  // dt: normalised elapsed time (1.0 = one frame at 60 fps).
+  // Defaults to 1.0 so callers that don't pass it stay identical.
+  update(keys, platforms, dt = 1.0) {
     if (this.dead) { this.deathTimer++; return; }
 
     // If position or velocity has somehow become NaN/Infinity, recover
@@ -62,22 +64,29 @@ class Player {
     if (!isFinite(this.vx)) this.vx = 0;
     if (!isFinite(this.vy)) this.vy = 0;
 
-    this._handleInput(keys);
-    this._applyGravity();
-    this._move(platforms);
+    this._handleInput(keys, dt);
+    this._applyGravity(dt);
+    this._move(platforms, dt);
     this._resolveState(keys);
-    this._updateStamina();
+    this._updateStamina(dt);
     this._updateAnimation();
     if (this.invincibleTimer > 0) this.invincibleTimer--;
   }
 
-  _handleInput(keys) {
-    // Horizontal movement — always available
+  _handleInput(keys, dt) {
+    // vx is SET to a fixed speed each frame (not accumulated), so the
+    // speed value itself doesn't need dt scaling. The per-frame displacement
+    // is applied as vx*dt inside _move, keeping movement rate consistent.
     if (keys.left)       { this.vx = -C.MOVE_SPEED; this.facingRight = false; }
     else if (keys.right) { this.vx =  C.MOVE_SPEED; this.facingRight = true;  }
     else {
-      // Slower friction when on platform top
-      this.vx *= (this.pstate === PSTATE.PLATFORM_TOP) ? 0.5 : 0.7;
+      // dt-aware friction: Math.pow(factor, dt) gives the same deceleration
+      // curve per second regardless of frame rate.
+      // At dt=1 (60 fps) these equal the original 0.5 / 0.7 exactly.
+      const fric = (this.pstate === PSTATE.PLATFORM_TOP)
+        ? Math.pow(0.50, dt)
+        : Math.pow(0.70, dt);
+      this.vx *= fric;
     }
 
     // Clamp walk speed on platform top
@@ -85,26 +94,32 @@ class Player {
       this.vx = Math.max(-C.WALK_SPEED, Math.min(C.WALK_SPEED, this.vx));
     }
 
-    // Dive input — pressing down/space while on platform top releases the bat
+    // Dive input — dt-scaled impulse so dive acceleration is frame-rate
+    // independent. The vy cap (6) is on the raw velocity, which is then
+    // applied as vy*dt inside _move — terminal dive speed stays the same.
     const wantsDive = keys.down || keys.space;
     if (wantsDive && this.stamina > 0) {
-      this.vy += C.FLY_FORCE;
+      this.vy += C.FLY_FORCE * dt;
       if (this.vy > 6) this.vy = 6;
     }
   }
 
-  _applyGravity() {
+  _applyGravity(dt) {
     // Gravity suspended while resting on a surface
     if (this.pstate === PSTATE.HANGING || this.pstate === PSTATE.PLATFORM_TOP) return;
-    this.vy += C.GRAVITY;
+    // dt-scaled so vy accumulates at the same rate per second at any frame rate
+    this.vy += C.GRAVITY * dt;
     if (this.vy < -C.MAX_FALL_SPEED) this.vy = -C.MAX_FALL_SPEED;
   }
 
-  _move(platforms) {
-    const infoX = Physics.moveX(this, platforms, this.vx);
+  _move(platforms, dt) {
+    // Multiply velocities by dt so the per-frame displacement scales with
+    // elapsed time. Physics.moveX/Y receive a distance (px), not a velocity,
+    // so the collision logic inside them is unaffected by this change.
+    const infoX = Physics.moveX(this, platforms, this.vx * dt);
     this.onWall = infoX.left ? -1 : (infoX.right ? 1 : 0);
 
-    const infoY = Physics.moveY(this, platforms, this.vy);
+    const infoY = Physics.moveY(this, platforms, this.vy * dt);
     this.onCeiling = infoY.top;
     this.onFloor   = infoY.bottom;
 
@@ -165,11 +180,13 @@ class Player {
     this.pstate = PSTATE.AIRBORNE;
   }
 
-  _updateStamina() {
+  _updateStamina(dt) {
+    // dt-scaled so stamina drains and recharges at the same real-world rate
+    // regardless of how many frames per second are being rendered
     if (this.pstate === PSTATE.DIVING) {
-      this.stamina = Math.max(0, this.stamina - C.STAMINA_DRAIN);
+      this.stamina = Math.max(0, this.stamina - C.STAMINA_DRAIN * dt);
     } else if (this.pstate === PSTATE.HANGING || this.pstate === PSTATE.PLATFORM_TOP) {
-      this.stamina = Math.min(C.MAX_STAMINA, this.stamina + C.STAMINA_REGEN);
+      this.stamina = Math.min(C.MAX_STAMINA, this.stamina + C.STAMINA_REGEN * dt);
     }
   }
 

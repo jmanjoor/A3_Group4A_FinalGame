@@ -16,6 +16,7 @@ const SPRITES = {
     mid:   [null, null, null],  // variants 1, 2, 3
     right: null,
   },
+  titleLogo: null,
 
   // Call inside p5 preload()
   load(p) {
@@ -25,5 +26,6 @@ const SPRITES = {
     this.platform.mid[1] = p.loadImage(base + 'platform_Tile_Cave_2.png');
     this.platform.mid[2] = p.loadImage(base + 'platform_Tile_Cave_3.png');
     this.platform.right  = p.loadImage(base + 'platform_EndTile_Cave_Right.png');
+    this.titleLogo       = p.loadImage('assets/Title/logo.png');
   },
 };

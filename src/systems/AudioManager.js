@@ -7,7 +7,7 @@ const VOL_BGM = 0.11; // background music — well under SFX
 const VOL_WINGS = 0.55; // airborne wing flaps
 const VOL_WALK = 0.38; // ground footsteps
 const VOL_CRUNCH = 0.72; // apple collect — punchy one-shot
-const VOL_HURT = 0.62; // damage hit — sharp and urgent
+const VOL_HURT = 0.15; // damage hit — sharp and urgent
 const VOL_SONAR = 0.6; // echolocation ping
 const VOL_WHOOSH = 0.5; // tutorial page transition
 
@@ -16,8 +16,8 @@ const BGM_FADE_IN = 1.8; // slow atmospheric rise when level starts
 const BGM_FADE_OUT = 1.2; // smooth fade on death / level complete
 const WINGS_FADE_IN = 0.18;
 const WINGS_FADE_OUT = 0.35;
-const WALK_FADE_IN = 0.06;
-const WALK_FADE_OUT = 0.18;
+const WALK_FADE_IN = 0.2;
+const WALK_FADE_OUT = 0.28;
 
 // ── Internal looping track helper ─────────────────────────────────────────
 class _AudioTrack {
@@ -258,10 +258,20 @@ class AudioManager {
       this._wings.fadeOut(WINGS_FADE_OUT);
     }
 
-    // Walk: on ground, moving horizontally, not flying.
+    // Walk: bat is on a surface and moving horizontally.
+    //
+    // Why coyoteTimer: when pstate=HANGING and vy=0, Physics.moveY receives
+    // 0 and returns early without sweeping for collisions, so onCeiling comes
+    // back false and _resolveState flips to AIRBORNE for that frame. The bat
+    // then re-detects the ceiling the very next frame and flips back to
+    // HANGING. This alternation every frame makes isHanging flicker, which
+    // would constantly reverse the fade and produce no audible sound.
+    // coyoteTimer is set to COYOTE_FRAMES whenever onCeiling is true and only
+    // decrements otherwise, so it stays > 0 across both halves of the
+    // alternation, giving a stable "near ceiling" signal.
     const moving = Math.abs(player.vx) > 0.5;
-    const wantsWalk =
-      !player.dead && player.onGround && moving && !player.isFlying;
+    const onSurface = player.isOnPlatformTop || player.isHanging || player.coyoteTimer > 0;
+    const wantsWalk = !player.dead && onSurface && moving && !player.isDiving;
     if (wantsWalk && !this._walk._playing) {
       this._walk.fadeIn(WALK_FADE_IN);
     } else if (!wantsWalk && this._walk._playing) {
