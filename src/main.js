@@ -72,6 +72,7 @@ const sketch = (p) => {
       echoSystem.pulseY = player.cy;
       if (echoSystem.trigger(player.cx, player.cy)) {
         echoFiredThisFrame = true;
+        hud.notifyEchoUsed();
         audioManager.playSonar();
       }
     }
@@ -210,8 +211,24 @@ function drawPlaying(p, dt) {
   level.draw(p);
   p.pop();
 
-  // Fog
+  // Distance-based darkening — platforms fade darker toward edges of vision
   const ps = camera.worldToScreen(player.cx, player.cy);
+  p.push();
+  p.resetMatrix();
+  const dCtx = p.drawingContext;
+  const darkGrad = dCtx.createRadialGradient(
+    ps.x, ps.y, C.VISION_RADIUS * 0.2,
+    ps.x, ps.y, C.VISION_RADIUS * 2.5
+  );
+  darkGrad.addColorStop(0,   'rgba(10,5,3,0.15)');
+  darkGrad.addColorStop(0.2, 'rgba(10,5,3,0.5)');
+  darkGrad.addColorStop(0.5, 'rgba(10,5,3,0.8)');
+  darkGrad.addColorStop(1,   'rgba(10,5,3,0.95)');
+  dCtx.fillStyle = darkGrad;
+  dCtx.fillRect(0, 0, C.WIDTH, C.HEIGHT);
+  p.pop();
+
+  // Fog
   visSystem.apply(p, ps.x, ps.y, C.WIDTH, C.HEIGHT);
 
   // Echo outlines after fog

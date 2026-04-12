@@ -4,11 +4,21 @@ class HUD {
     this.lastFruitCount = 0;
     this.messageText = '';
     this.messageTimer = 0;
+    // Echo reminder tooltip — tracks real time so it survives HUD recreations
+    this.lastEchoTime = Date.now();
+    this.echoTooltipAlpha = 0;
+    this.ECHO_REMINDER_MS = 20000; // 20 seconds
   }
 
   showMessage(text, frames = 150) {
     this.messageText = text;
     this.messageTimer = frames;
+  }
+
+  // Call this whenever the player successfully fires echolocation
+  notifyEchoUsed() {
+    this.lastEchoTime = Date.now();
+    this.echoTooltipAlpha = 0;
   }
 
   update(level) {
@@ -20,6 +30,12 @@ class HUD {
       this.fruitPopTimer = 30;
       this.lastFruitCount = collected;
     }
+
+    // Fade tooltip in/out based on real elapsed time since last echo use
+    const elapsed = Date.now() - this.lastEchoTime;
+    const shouldShow = elapsed >= this.ECHO_REMINDER_MS;
+    const target = shouldShow ? 1 : 0;
+    this.echoTooltipAlpha += (target - this.echoTooltipAlpha) * 0.05;
   }
 
   draw(p, player, level, echoSystem, isTutorial = false) {
@@ -130,6 +146,47 @@ class HUD {
       p.noStroke();
       p.fill(i < echoSystem.charges ? '#ff6030' : '#3a1208');
       p.circle(dotStartX + i * dotGap, dotY, dotR * 2);
+    }
+
+    // ── Echo reminder tooltip ─────────────────────────────────────────
+    if (this.echoTooltipAlpha > 0.01) {
+      const a   = this.echoTooltipAlpha;
+      const ttY = dotY + dotR * 2 + 10;
+      const ttX = ecX;
+      const msg = 'press E to echolocate';
+
+      p.textFont('monospace');
+      p.textSize(9);
+      p.textAlign(p.CENTER, p.TOP);
+
+      const tw   = p.textWidth(msg);
+      const padX = 7;
+      const padY = 4;
+      const bx   = ttX - tw / 2 - padX;
+      const by   = ttY - padY;
+      const bw   = tw + padX * 2;
+      const bh   = 11 + padY * 2;
+
+      // Background pill
+      p.noStroke();
+      p.fill(`rgba(15,7,5,${a * 0.85})`);
+      p.rect(bx, by, bw, bh, 4);
+
+      // Border
+      p.noFill();
+      p.stroke(`rgba(255,90,40,${a * 0.4})`);
+      p.strokeWeight(1);
+      p.rect(bx, by, bw, bh, 4);
+
+      // Small upward arrow toward echo widget
+      p.noStroke();
+      p.fill(`rgba(255,90,40,${a * 0.5})`);
+      p.triangle(ttX - 4, by, ttX + 4, by, ttX, by - 5);
+
+      // Text
+      p.noStroke();
+      p.fill(`rgba(240,213,200,${a})`);
+      p.text(msg, ttX, ttY);
     }
 
     // ── Fruit counter (top-center, hidden in tutorial) ────────────────
