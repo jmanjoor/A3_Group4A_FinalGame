@@ -8,6 +8,7 @@ const SPRITES = {
     mid:   [null, null, null],  // variants 1, 2, 3
     right: null,
   },
+  titleLogo: null,
 
   spike: {
     left:  null,
@@ -42,6 +43,7 @@ const SPRITES = {
     this.platform.mid[1] = p.loadImage(base + 'platform_Tile_Cave_2.png');
     this.platform.mid[2] = p.loadImage(base + 'platform_Tile_Cave_3.png');
     this.platform.right  = p.loadImage(base + 'platform_EndTile_Cave_Right.png');
+    this.titleLogo       = p.loadImage('assets/Title/logo.png');
 
     // Spike sprites — normal (attached to platform)
     this.spike.left      = p.loadImage(base + 'Platform_EndSpikes_Cave_Left.png');

@@ -28,22 +28,29 @@ class WelcomeScreen {
 
     // Cave ceiling silhouette
     p.noStroke();
-    p.fill('#0d0b14');
+    p.fill("#0d0b14");
     p.beginShape();
     p.vertex(0, 0);
     for (let x = 0; x <= p.width; x += 30) {
-      const h = 40 + Math.sin(x * 0.04 + this.timer * 0.005) * 20 + Math.sin(x * 0.09) * 15;
+      const h =
+        40 +
+        Math.sin(x * 0.04 + this.timer * 0.005) * 20 +
+        Math.sin(x * 0.09) * 15;
       p.vertex(x, h);
     }
     p.vertex(p.width, 0);
     p.endShape(p.CLOSE);
 
     // Cave floor silhouette
-    p.fill('#0d0b14');
+    p.fill("#0d0b14");
     p.beginShape();
     p.vertex(0, p.height);
     for (let x = 0; x <= p.width; x += 30) {
-      const h = p.height - 40 - Math.sin(x * 0.04 + this.timer * 0.007 + 2) * 20 - Math.sin(x * 0.1) * 10;
+      const h =
+        p.height -
+        40 -
+        Math.sin(x * 0.04 + this.timer * 0.007 + 2) * 20 -
+        Math.sin(x * 0.1) * 10;
       p.vertex(x, h);
     }
     p.vertex(p.width, p.height);
@@ -52,49 +59,58 @@ class WelcomeScreen {
     // Animated bat in center
     this._drawCenterBat(p);
 
-    // Title
-    const titleY = p.height * 0.35;
+    // Title logo — fills ~65% of canvas width for a dominant presence
+    const logo = SPRITES.titleLogo;
+    const maxLogoW = p.width * 0.65;
+    const logoScale = Math.min(1, maxLogoW / logo.width);
+    const logoW = logo.width * logoScale;
+    const logoH = logo.height * logoScale;
+    // Place center slightly above midpoint for visual balance
+    const titleY = p.height * 0.26;
+    p.imageMode(p.CENTER);
+    p.image(logo, p.width / 2, titleY, logoW, logoH);
+    p.imageMode(p.CORNER);
+
+    // Subtitle — sized relative to canvas width, sits just below logo
     p.textAlign(p.CENTER, p.CENTER);
-
-    // Title shadow / glow
-    p.textSize(52);
-    p.fill('rgba(180,40,10,0.3)');
-    p.text('BLIND FLIGHT', p.width / 2 + 2, titleY + 2);
-
-    p.fill('#ff6030');
-    p.text('BLIND FLIGHT', p.width / 2, titleY);
-
-    // Subtitle
-    p.textSize(16);
+    p.textSize(p.width * 0.024);
     p.fill(C.TEXT_DIM);
-    p.text('A bat platformer', p.width / 2, titleY + 46);
+    p.text(
+      "A bat platformer",
+      p.width / 2,
+      titleY + logoH / 2 + p.width * 0.022,
+    );
 
     // Blinking start prompt
     if (Math.floor(this.timer / 30) % 2 === 0) {
-      p.textSize(15);
-      p.fill('#e8521e');
-      p.text('Press ENTER to begin', p.width / 2, p.height * 0.72);
+      p.textSize(p.width * 0.024);
+      p.fill("#e8521e");
+      p.text("Press ENTER to begin", p.width / 2, p.height * 0.76);
     }
 
     // Controls preview
-    p.textSize(11);
+    p.textSize(p.width * 0.017);
     p.fill(C.TEXT_DIM);
-    p.text('WASD - Move & Dive   |   E - Echolocation', p.width / 2, p.height * 0.82);
+    p.text(
+      "WASD - Move & Dive   |   E - Echolocation",
+      p.width / 2,
+      p.height * 0.87,
+    );
   }
 
   _drawCenterBat(p) {
     const t = this.batAnim * 0.025;
     const cx = p.width / 2 + Math.sin(t) * 30;
     const cy = p.height * 0.55 + Math.sin(t * 1.3) * 15;
-    const sw = 200;
-    const sh = 175;
+    const wingFlap = Math.sin(t * 6) * 0.5 + 0.5;
+    const scale = 2.2;
 
     p.push();
     p.translate(cx, cy);
 
     // Shadow/glow under the bat
     p.noStroke();
-    p.fill('rgba(180,40,10,0.15)');
+    p.fill("rgba(180,40,10,0.15)");
     p.ellipse(0, 10, 110, 40);
 
     p.image(SPRITES.bat.animation, -sw / 2, -sh / 2, sw, sh);

@@ -42,119 +42,110 @@ class HUD {
     p.push();
     p.resetMatrix();
 
-    const pad = 14;
+    // ── Consistent spacing base — all sizes derived from canvas width ──
+    const PAD       = Math.round(p.width * 0.020);  // ~16px at 800w
+    const FONT_XS   = Math.round(p.width * 0.013);  // ~10px — tiny labels
+    const FONT_SM   = Math.round(p.width * 0.016);  // ~13px — secondary
+    const FONT_MD   = Math.round(p.width * 0.022);  // ~18px — primary
 
-    // ── Stamina bar ──────────────────────────────────────────────────
-    const sbX = pad;
-    const sbY = pad;
-    const sbW = 130;
-    const sbH = 10;
+    p.textFont('monospace');
+    p.noStroke();
+
+    // ── Left panel: Stamina + HP (grouped) ───────────────────────────
+    const sbX  = PAD;
+    const sbW  = Math.round(p.width * 0.190);  // ~152px
+    const sbH  = Math.round(p.width * 0.015);  // ~12px — thicker bar
+    const sbY  = PAD + FONT_XS + 5;            // below the label
     const stRatio = player.stamina / C.MAX_STAMINA;
 
-    // Background
-    p.noStroke();
-    p.fill('rgba(10,8,18,0.7)');
-    p.rect(sbX - 4, sbY - 14, sbW + 8, sbH + 22, 6);
+    // Unified panel background (covers label + bar + hearts)
+    p.fill('rgba(10,8,18,0.78)');
+    p.rect(sbX - 6, PAD - 6, sbW + 18, sbH + FONT_XS + 52, 9);
 
     // Label
     p.fill(C.TEXT_DIM);
-    p.noStroke();
-    p.textSize(9);
+    p.textSize(FONT_XS);
     p.textAlign(p.LEFT, p.TOP);
-    p.textFont('monospace');
-    p.text('DIVE STAMINA', sbX, sbY - 11);
+    p.text('DIVE STAMINA', sbX, PAD);
 
     // Bar track
     p.fill('rgba(40,30,60,0.9)');
-    p.rect(sbX, sbY, sbW, sbH, 3);
+    p.rect(sbX, sbY, sbW, sbH, 4);
 
     // Bar fill
     const stColor = stRatio < 0.25 ? C.STAMINA_LOW_C : C.STAMINA_FULL;
     p.fill(stColor);
-    p.rect(sbX, sbY, sbW * stRatio, sbH, 3);
+    if (sbW * stRatio > 0) p.rect(sbX, sbY, sbW * stRatio, sbH, 4);
 
     // Bar shimmer
     if (stRatio > 0.05) {
       p.fill('rgba(255,255,255,0.15)');
-      p.rect(sbX, sbY, sbW * stRatio, sbH / 2, 3);
+      p.rect(sbX, sbY, sbW * stRatio, sbH / 2, 4);
     }
 
-    // Hanging indicator
+    // Hanging indicator — replaces space below bar while active
     if (player.isHanging) {
-      p.fill(C.HANG_GLOW);
-      p.textSize(9);
-      p.textAlign(p.LEFT, p.TOP);
       const pulse = 0.6 + 0.4 * Math.sin(Date.now() * 0.01);
       p.fill(`rgba(232,82,30,${pulse})`);
-      p.text('RECHARGING', sbX, sbY + sbH + 4);
-    }
-
-    // ── HP ────────────────────────────────────────────────────────────
-    const hpX = pad;
-    const hpY = sbY + sbH + 26;
-    p.noStroke();
-    p.fill('rgba(10,8,18,0.7)');
-    p.rect(hpX - 4, hpY - 4, 80, 20, 6);
-
-    for (let i = 0; i < C.MAX_HP; i++) {
-      const hx = hpX + i * 22;
-      if (i < player.hp) {
-        p.fill('#c42a0a');
-        p.text('♥', hx, hpY);
-      } else {
-        p.fill('#2a0a06');
-        p.text('♥', hx, hpY);
-      }
-      p.textSize(13);
+      p.textSize(FONT_XS);
       p.textAlign(p.LEFT, p.TOP);
+      p.text('RECHARGING', sbX, sbY + sbH + 5);
     }
 
-    // ── Echolocation cooldown + charges ──────────────────────────────
-    const ecX = p.width - pad - 40;
-    const ecY = pad;
-    const ecR = 18;
+    // ── HP hearts ────────────────────────────────────────────────────
+    const hpY      = sbY + sbH + 24;
+    const heartSz  = Math.round(p.width * 0.022);  // ~18px — larger hearts
+    const heartGap = heartSz + 5;
 
+    p.textSize(heartSz);
+    p.textAlign(p.LEFT, p.TOP);
+    for (let i = 0; i < C.MAX_HP; i++) {
+      p.fill(i < player.hp ? '#c42a0a' : '#2a0a06');
+      p.text('♥', sbX + i * heartGap, hpY);
+    }
+
+    // ── Echolocation (top-right) ──────────────────────────────────────
+    const ecR = Math.round(p.width * 0.030);   // ~24px radius
+    const ecX = p.width - PAD - ecR;
+    const ecY = PAD + ecR;
+
+    // Background
     p.noStroke();
-    p.fill('rgba(10,8,18,0.7)');
-    p.circle(ecX, ecY + ecR, ecR * 2 + 10);
+    p.fill('rgba(10,8,18,0.78)');
+    p.circle(ecX, ecY, (ecR + 9) * 2);
 
     // Cooldown arc
     p.noFill();
     p.stroke(echoSystem.isReady ? '#ff6030' : '#5a1a0a');
-    p.strokeWeight(3);
-    p.arc(ecX, ecY + ecR,
+    p.strokeWeight(3.5);
+    p.arc(ecX, ecY,
           ecR * 2, ecR * 2,
           -Math.PI / 2,
           -Math.PI / 2 + echoSystem.cooldownProgress * Math.PI * 2);
 
-    // Icon — greyed out when no charges
+    // Icon
     p.noStroke();
     p.fill(echoSystem.charges > 0 ? (echoSystem.isReady ? '#f0d5c8' : '#7c6e99') : '#3a1208');
     p.textAlign(p.CENTER, p.CENTER);
-    p.textSize(14);
-    p.text('◎', ecX, ecY + ecR);
+    p.textSize(FONT_MD);
+    p.text('◎', ecX, ecY);
 
     // Key hint
-    p.textSize(8);
+    p.textSize(FONT_XS);
     p.fill(C.TEXT_DIM);
-    p.text('[E]', ecX, ecY + ecR + ecR + 4);
+    p.text('[E]', ecX, ecY + ecR + 11);
 
-    // Charge dots — one dot per max charge, filled if available
-    const dotR    = 3;
-    const dotGap  = 8;
+    // Charge dots
+    const dotR      = 3.5;
+    const dotGap    = 9;
     const totalDotW = echoSystem.maxCharges * dotGap - 2;
     const dotStartX = ecX - totalDotW / 2 + dotR;
-    const dotY = ecY + ecR * 2 + 14;
+    const dotY      = ecY + ecR + 22;
 
     for (let i = 0; i < echoSystem.maxCharges; i++) {
-      const dx = dotStartX + i * dotGap;
       p.noStroke();
-      if (i < echoSystem.charges) {
-        p.fill('#ff6030');
-      } else {
-        p.fill('#3a1208');
-      }
-      p.circle(dx, dotY, dotR * 2);
+      p.fill(i < echoSystem.charges ? '#ff6030' : '#3a1208');
+      p.circle(dotStartX + i * dotGap, dotY, dotR * 2);
     }
 
     // ── Echo reminder tooltip ─────────────────────────────────────────
@@ -198,43 +189,61 @@ class HUD {
       p.text(msg, ttX, ttY);
     }
 
-    // ── Fruit counter (hidden in tutorial) ───────────────────────────
+    // ── Fruit counter (top-center, hidden in tutorial) ────────────────
     if (!isTutorial) {
-      const fX = p.width / 2;
-      const fY = pad + 2;
-      const pop = this.fruitPopTimer > 0 ? 1 + (this.fruitPopTimer / 30) * 0.3 : 1;
+      const fX       = p.width / 2;
+      const fY       = PAD;
+      const popScale = this.fruitPopTimer > 0 ? 1 + (this.fruitPopTimer / 30) * 0.22 : 1;
+      const fruitSz  = Math.round(FONT_SM * popScale);
 
-      p.noStroke();
-      p.fill('rgba(10,8,18,0.7)');
-      p.rect(fX - 55, fY - 6, 110, 26, 8);
-
-      p.textAlign(p.CENTER, p.TOP);
-      p.textSize(11 * pop);
+      p.textSize(fruitSz);
       const remaining = level.fruitsRemaining;
-      p.fill(remaining === 0 ? '#6bcb77' : C.TEXT_MAIN);
       const label = remaining === 0
         ? '✓ Find the exit!'
         : `🍎 ${level.fruitsCollected} / ${level.data.fruitsNeeded}`;
-      p.text(label, fX, fY);
+
+      const tw = p.textWidth(label);
+      p.noStroke();
+      p.fill('rgba(10,8,18,0.78)');
+      p.rect(fX - tw / 2 - 14, fY - 5, tw + 28, fruitSz + 14, 9);
+
+      p.textAlign(p.CENTER, p.TOP);
+      p.fill(remaining === 0 ? '#6bcb77' : C.TEXT_MAIN);
+      p.text(label, fX, fY + 2);
     }
 
-    // ── Level name (hidden in tutorial) ──────────────────────────────
+    // ── Level name (bottom-center, hidden in tutorial) ────────────────
     if (!isTutorial) {
+      p.textSize(FONT_SM);
       p.textAlign(p.CENTER, p.BOTTOM);
-      p.textSize(10);
+
+      // Pill background sized to actual text
+      const lw = p.textWidth(level.data.name);
+      p.noStroke();
+      p.fill('rgba(10,8,18,0.65)');
+      p.rect(
+        p.width / 2 - lw / 2 - 12,
+        p.height - FONT_SM - PAD - 6,
+        lw + 24,
+        FONT_SM + 12,
+        6
+      );
+
       p.fill(C.TEXT_DIM);
-      p.text(level.data.name, p.width / 2, p.height - 8);
+      p.text(level.data.name, p.width / 2, p.height - PAD / 2);
     }
 
-    // ── Center message ───────────────────────────────────────────────
+    // ── Center message ────────────────────────────────────────────────
     if (this.messageTimer > 0) {
       const alpha = Math.min(1, this.messageTimer / 30);
       p.textAlign(p.CENTER, p.CENTER);
-      p.textSize(20);
-      p.fill(`rgba(226,217,243,${alpha})`);
-      // Shadow
+      p.textSize(Math.round(p.width * 0.030));  // ~24px
+
+      // Shadow drawn first so it sits behind
+      p.noStroke();
       p.fill(`rgba(0,0,0,${alpha * 0.7})`);
       p.text(this.messageText, p.width / 2 + 1, p.height / 2 + 1);
+
       p.fill(`rgba(255,90,40,${alpha})`);
       p.text(this.messageText, p.width / 2, p.height / 2);
     }

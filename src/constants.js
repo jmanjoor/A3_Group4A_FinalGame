@@ -4,6 +4,11 @@ const C = {
   WIDTH: 800,
   HEIGHT: 500,
 
+  // Reference resolution — all gameplay values are tuned against these.
+  // Systems that need a screen-relative scale factor divide by these.
+  BASE_W: 800,
+  BASE_H: 500,
+
   // Physics
   GRAVITY: -0.45,            // pulls UP (negative = toward ceiling)
   JUMP_FORCE: 7,             // unused but kept for reference

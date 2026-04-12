@@ -98,8 +98,8 @@ class TutorialLevel {
     this.messageTimer = this.MESSAGE_HOLD + this.MESSAGE_FADE;
   }
 
-  // Draw the tutorial hint — positioned in the lower third, not center
-  // so it doesn't obscure the gameplay
+  // Draw the tutorial hint — anchored to the lower safe margin,
+  // clear of the gameplay zone
   draw(p) {
     if (this.messageTimer <= 0) return;
 
@@ -110,28 +110,36 @@ class TutorialLevel {
     p.push();
     p.resetMatrix();
 
-    const cx   = p.width / 2;
-    const cy   = p.height * 0.78;
-    const msg  = this.message;
+    const cx      = p.width / 2;
+    const cy      = p.height * 0.82;   // lower anchor — more clearance from action
+    const msg     = this.message;
+    const fontSize = Math.round(p.width * 0.022);  // ~18px — more readable
 
     p.textFont('monospace');
-    p.textSize(16);
+    p.textSize(fontSize);
     p.textAlign(p.CENTER, p.CENTER);
 
-    // Measure for background pill
-    const tw = p.textWidth(msg);
-    const padX = 20, padY = 10;
+    // Measure pill dimensions using the actual font size
+    const tw   = p.textWidth(msg);
+    const padX = 24;
+    const padY = 11;
+    const lineH = fontSize + 4;
+
+    const pillX = cx - tw / 2 - padX;
+    const pillY = cy - lineH / 2 - padY;
+    const pillW = tw + padX * 2;
+    const pillH = lineH + padY * 2;
 
     // Dark pill background
     p.noStroke();
-    p.fill(`rgba(15,7,5,${alpha * 0.82})`);
-    p.rect(cx - tw / 2 - padX, cy - 12 - padY, tw + padX * 2, 24 + padY * 2, 8);
+    p.fill(`rgba(15,7,5,${alpha * 0.88})`);
+    p.rect(pillX, pillY, pillW, pillH, 10);
 
-    // Subtle ember border
+    // Ember border
     p.noFill();
-    p.stroke(`rgba(255,90,40,${alpha * 0.4})`);
-    p.strokeWeight(1);
-    p.rect(cx - tw / 2 - padX, cy - 12 - padY, tw + padX * 2, 24 + padY * 2, 8);
+    p.stroke(`rgba(255,90,40,${alpha * 0.50})`);
+    p.strokeWeight(1.5);
+    p.rect(pillX, pillY, pillW, pillH, 10);
 
     // Text shadow
     p.noStroke();

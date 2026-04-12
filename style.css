@@ -18,10 +18,16 @@ html, body {
 #game-container {
   position: relative;
   line-height: 0;
+  /* Scale to ~85% of viewport, respecting the 8:5 (800×500) aspect ratio.
+     136vh = 85vh × (800/500) — prevents the canvas from overflowing vertically. */
+  width: min(85vw, 136vh);
 }
 
 #game-container canvas {
   display: block;
+  /* Let CSS scale the canvas element; internal pixel resolution stays 800×500. */
+  width: 100% !important;
+  height: auto !important;
   border: 1px solid #750f0f;
   box-shadow:
     0 0 60px rgba(190, 25, 25, 0.25),

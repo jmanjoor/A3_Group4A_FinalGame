@@ -7,7 +7,7 @@ class Camera {
     this.lerpSpeed = 0.1;
   }
 
-  update(player, worldW, worldH, viewW, viewH) {
+  update(player, worldW, worldH, viewW, viewH, dt = 1.0) {
     // Guard against NaN player position corrupting the camera
     const px = isFinite(player.x) ? player.x : this.x;
     const py = isFinite(player.y) ? player.y : this.y;
@@ -18,8 +18,11 @@ class Camera {
     this.targetX = Math.max(0, Math.min(this.targetX, worldW - viewW));
     this.targetY = Math.max(0, Math.min(this.targetY, worldH - viewH));
 
-    this.x += (this.targetX - this.x) * this.lerpSpeed;
-    this.y += (this.targetY - this.y) * this.lerpSpeed;
+    // dt-aware lerp: 1 - (1 - speed)^dt gives the same lag feel at any
+    // frame rate. At dt=1 (60 fps) this equals lerpSpeed exactly.
+    const lerpFactor = 1 - Math.pow(1 - this.lerpSpeed, dt);
+    this.x += (this.targetX - this.x) * lerpFactor;
+    this.y += (this.targetY - this.y) * lerpFactor;
 
     // Final safety: if camera position is somehow still invalid, reset to 0
     if (!isFinite(this.x)) this.x = 0;
