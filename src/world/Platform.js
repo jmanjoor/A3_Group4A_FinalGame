@@ -117,30 +117,25 @@ class Platform {
         const c3 = 4 + (_h(h2 + 3)  % 11);
 
         // Extra midpoint offsets along each edge for rougher shapes
-        const m0 = 2 + (_h(h2 + 4)  % 6);  // top edge
-        const m1 = 2 + (_h(h2 + 5)  % 6);  // right edge
-        const m2 = 2 + (_h(h2 + 6)  % 6);  // bottom edge
-        const m3 = 2 + (_h(h2 + 7)  % 6);  // left edge
-        // Midpoint horizontal/vertical wobble
+        const m0 = 2 + (_h(h2 + 4)  % 6);
+        const m1 = 2 + (_h(h2 + 5)  % 6);
+        const m2 = 2 + (_h(h2 + 6)  % 6);
+        const m3 = 2 + (_h(h2 + 7)  % 6);
         const mx0 = (_h(h2 + 8)  % 9) - 4;
         const mx1 = (_h(h2 + 9)  % 9) - 4;
         const mx2 = (_h(h2 + 10) % 9) - 4;
         const mx3 = (_h(h2 + 11) % 9) - 4;
 
         ctx.beginPath();
-        // Top edge: corner → midpoint → corner
         ctx.moveTo(dx + c0, dy);
         ctx.lineTo(dx + dw * 0.5 + mx0, dy + m0);
         ctx.lineTo(dx + dw - c1, dy);
-        // Right edge
         ctx.lineTo(dx + dw, dy + c1);
         ctx.lineTo(dx + dw - m1, dy + dh * 0.5 + mx1);
         ctx.lineTo(dx + dw, dy + dh - c2);
-        // Bottom edge
         ctx.lineTo(dx + dw - c2, dy + dh);
         ctx.lineTo(dx + dw * 0.5 + mx2, dy + dh - m2);
         ctx.lineTo(dx + c3, dy + dh);
-        // Left edge
         ctx.lineTo(dx, dy + dh - c3);
         ctx.lineTo(dx + m3, dy + dh * 0.5 + mx3);
         ctx.lineTo(dx, dy + c0);

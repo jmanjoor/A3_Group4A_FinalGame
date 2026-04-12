@@ -21,29 +21,35 @@ class Spike {
 
     p.push();
 
-    // Nudge sprites so they make contact with the adjacent platform
+    // Stretch spikes vertically to appear longer
+    const stretch = 14;
+    const drawH = T + stretch;
+
+    // Nudge so the base stays against the platform, tips extend outward
     const nudge = 6;
-    const drawY = this.direction === 'down' ? this.y - nudge : this.y + nudge;
+    const drawY = this.direction === 'down'
+      ? this.y - nudge
+      : this.y + nudge - stretch;
 
     // Sprites are naturally down-pointing; flip for up-pointing spikes
     if (this.direction === 'up') {
-      p.translate(0, 2 * drawY + T);
+      p.translate(0, 2 * drawY + drawH);
       p.scale(1, -1);
     }
 
     if (totalTiles === 1) {
-      p.image(spr.left, this.x, drawY, T, T);
+      p.image(spr.left, this.x, drawY, T, drawH);
     } else if (totalTiles === 2) {
-      p.image(spr.left, this.x, drawY, T, T);
-      p.image(spr.right, this.x + T, drawY, T, T);
+      p.image(spr.left, this.x, drawY, T, drawH);
+      p.image(spr.right, this.x + T, drawY, T, drawH);
     } else {
       // 3+ tiles: left cap | mid cycling 1,2 | right cap
-      p.image(spr.left, this.x, drawY, T, T);
+      p.image(spr.left, this.x, drawY, T, drawH);
       const midCount = totalTiles - 2;
       for (let i = 0; i < midCount; i++) {
-        p.image(spr.mid[i % 2], this.x + T * (i + 1), drawY, T, T);
+        p.image(spr.mid[i % 2], this.x + T * (i + 1), drawY, T, drawH);
       }
-      p.image(spr.right, this.x + T * (totalTiles - 1), drawY, T, T);
+      p.image(spr.right, this.x + T * (totalTiles - 1), drawY, T, drawH);
     }
 
     p.pop();

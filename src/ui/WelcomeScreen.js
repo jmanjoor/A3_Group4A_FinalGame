@@ -86,69 +86,18 @@ class WelcomeScreen {
     const t = this.batAnim * 0.025;
     const cx = p.width / 2 + Math.sin(t) * 30;
     const cy = p.height * 0.55 + Math.sin(t * 1.3) * 15;
-    const wingFlap = Math.sin(t * 6) * 0.5 + 0.5;
-    const scale = 2.2;
+    const sw = 200;
+    const sh = 175;
 
     p.push();
     p.translate(cx, cy);
-    p.scale(scale);
 
-    // Wing shadow/glow
+    // Shadow/glow under the bat
     p.noStroke();
     p.fill('rgba(180,40,10,0.15)');
-    p.ellipse(0, 4, 50, 20);
+    p.ellipse(0, 10, 110, 40);
 
-    const wColor = '#9a1f08';
-
-    // Wings
-    p.fill(wColor);
-    const lWingY = -4 + wingFlap * 10;
-    p.beginShape();
-    p.vertex(0, -2);
-    p.vertex(-8, lWingY);
-    p.vertex(-18, lWingY - 3);
-    p.vertex(-14, lWingY + 7);
-    p.vertex(-4, lWingY + 9);
-    p.vertex(0, 2);
-    p.endShape(p.CLOSE);
-
-    const rWingY = -4 - wingFlap * 10;
-    p.beginShape();
-    p.vertex(0, -2);
-    p.vertex(8, rWingY);
-    p.vertex(18, rWingY - 3);
-    p.vertex(14, rWingY + 7);
-    p.vertex(4, rWingY + 9);
-    p.vertex(0, 2);
-    p.endShape(p.CLOSE);
-
-    // Body
-    p.fill('#2a0a06');
-    p.ellipse(0, 2, 14, 12);
-
-    // Head
-    p.fill('#2a0a06');
-    p.circle(0, -5, 12);
-
-    // Ears
-    p.fill('#2a0a06');
-    p.triangle(-3, -9, -7, -16, -1, -11);
-    p.triangle(3, -9, 7, -16, 1, -11);
-    p.fill('rgba(220,140,200,0.6)');
-    p.triangle(-3, -9, -6, -14, -2, -11);
-    p.triangle(3, -9, 6, -14, 2, -11);
-
-    // Eyes glow
-    p.fill('rgba(255,90,40,0.4)');
-    p.circle(-3, -5, 7);
-    p.circle(3, -5, 7);
-    p.fill('#e2d9f3');
-    p.circle(-3, -5, 4);
-    p.circle(3, -5, 4);
-    p.fill('#120504');
-    p.circle(-2.5, -5, 2.5);
-    p.circle(3.5, -5, 2.5);
-
+    p.image(SPRITES.bat.animation, -sw / 2, -sh / 2, sw, sh);
     p.pop();
   }
 }
