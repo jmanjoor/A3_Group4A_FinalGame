@@ -71,14 +71,14 @@ class WelcomeScreen {
     p.image(logo, p.width / 2, titleY, logoW, logoH);
     p.imageMode(p.CORNER);
 
-    // Subtitle — sized relative to canvas width, sits just below logo
+    // Subtitle — sits below the bat
     p.textAlign(p.CENTER, p.CENTER);
     p.textSize(p.width * 0.024);
     p.fill(C.TEXT_DIM);
     p.text(
       "A bat platformer",
       p.width / 2,
-      titleY + logoH / 2 + p.width * 0.022,
+      p.height * 0.68,
     );
 
     // Blinking start prompt
@@ -102,8 +102,8 @@ class WelcomeScreen {
     const t = this.batAnim * 0.025;
     const cx = p.width / 2 + Math.sin(t) * 30;
     const cy = p.height * 0.55 + Math.sin(t * 1.3) * 15;
-    const wingFlap = Math.sin(t * 6) * 0.5 + 0.5;
-    const scale = 2.2;
+    const sw = 200;
+    const sh = 175;
 
     p.push();
     p.translate(cx, cy);
