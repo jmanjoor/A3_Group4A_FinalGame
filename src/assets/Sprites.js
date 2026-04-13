@@ -38,11 +38,11 @@ const SPRITES = {
     const base = 'assets/sprites/';
 
     // Platform sprites
-    this.platform.left   = p.loadImage(base + 'platform_EndTile_Cave_Left.png');
-    this.platform.mid[0] = p.loadImage(base + 'platform_Tile_Cave_1.png');
-    this.platform.mid[1] = p.loadImage(base + 'platform_Tile_Cave_2.png');
-    this.platform.mid[2] = p.loadImage(base + 'platform_Tile_Cave_3.png');
-    this.platform.right  = p.loadImage(base + 'platform_EndTile_Cave_Right.png');
+    this.platform.left   = p.loadImage(base + 'Platform_EndTile_Cave_Left.png');
+    this.platform.mid[0] = p.loadImage(base + 'Platform_Tile_Cave_1.png');
+    this.platform.mid[1] = p.loadImage(base + 'Platform_Tile_Cave_2.png');
+    this.platform.mid[2] = p.loadImage(base + 'Platform_Tile_Cave_3.png');
+    this.platform.right  = p.loadImage(base + 'Platform_EndTile_Cave_Right.png');
     this.titleLogo       = p.loadImage('assets/Title/logo.png');
 
     // Spike sprites — normal (attached to platform)
