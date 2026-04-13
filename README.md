@@ -20,7 +20,7 @@ In order to complete the game, the pllayer must find all the fruits that are hid
 
 ---
 
-## Interaction Instructions
+## Controls
 
 Controls:
 
